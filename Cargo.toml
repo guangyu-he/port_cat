@@ -1,0 +1,10 @@
+[package]
+name = "conn_test"
+version = "0.1.0"
+edition = "2024"
+authors = ["Guangyu He <me@heguangyu.net>"]
+
+[dependencies]
+anyhow = "1.0.100"
+clap = { version = "4.3.24", features = ["derive"] }
+
