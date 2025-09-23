@@ -1,10 +1,14 @@
 [package]
-name = "conn_test"
+name = "port_cat"
 version = "0.1.0"
 edition = "2024"
 authors = ["Guangyu He <me@heguangyu.net>"]
+license = "MIT"
+description = "A simple CLI tool to test connectivity to or scan ports on a remote host."
 
 [dependencies]
 anyhow = "1.0.100"
 clap = { version = "4.3.24", features = ["derive"] }
+log = "0.4.28"
+env_logger = "0.11.8"
 
