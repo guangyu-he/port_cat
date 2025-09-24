@@ -1,6 +1,6 @@
 mod connect;
-mod scan;
 mod detect_service;
+mod scan;
 
 use clap::Parser;
 use env_logger::Env;
@@ -18,12 +18,8 @@ struct Args {
     port: Vec<u16>,
 
     /// Scan mode
-    #[clap(short, long, default_value_t = false)]
-    scan: bool,
-
-    /// Port range for scanning (e.g., 1-1000)
     #[clap(short, long)]
-    range: Option<String>,
+    scan: Option<String>,
 
     /// Timeout in seconds
     #[clap(short, long, default_value_t = 5)]
@@ -41,7 +37,7 @@ fn main() {
         .format_timestamp_secs()
         .init();
 
-    match if args.scan {
+    match if args.scan.is_some() {
         scan::scan_mode(args)
     } else {
         connect::connect_mode(args)

@@ -4,7 +4,7 @@ use std::net::{TcpStream, ToSocketAddrs};
 use std::time::Duration;
 
 pub fn scan_mode(config: Args) -> anyhow::Result<()> {
-    let port_range = if let Some(range_str) = config.range {
+    let port_range = if let Some(range_str) = config.scan {
         let parts: Vec<&str> = range_str.split('-').collect();
         if parts.len() != 2 {
             return Err(anyhow::anyhow!("Invalid range format. Use start-end."));
