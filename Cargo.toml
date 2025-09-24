@@ -5,6 +5,10 @@ edition = "2024"
 authors = ["Guangyu He <me@heguangyu.net>"]
 license = "MIT"
 description = "A simple CLI tool to test connectivity to or scan ports on a remote host."
+repository = "https://github.com/guangyu-he/port_cat"
+readme = "README.md"
+keywords = ["port", "scanner", "connectivity", "cli"]
+categories = ["network-programming", "command-line-utilities"]
 
 [dependencies]
 anyhow = "1.0"
