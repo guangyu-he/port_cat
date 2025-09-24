@@ -1,10 +1,9 @@
-use anyhow::Result;
+mod connect;
+mod scan;
+
 use clap::Parser;
 use env_logger::Env;
-use log::{debug, info, warn};
-use std::io::{self, Write};
-use std::net::{TcpStream, ToSocketAddrs};
-use std::time::Duration;
+use log::error;
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -41,96 +40,15 @@ fn main() {
         .format_timestamp_secs()
         .init();
 
-    match run(args) {
+    match if args.scan {
+        scan::scan_mode(args)
+    } else {
+        connect::connect_mode(args)
+    } {
         Ok(_) => {}
         Err(e) => {
-            eprintln!("Error: {}", e);
+            error!("Error: {}", e);
             std::process::exit(1);
         }
     }
-}
-
-fn run(args: Args) -> Result<()> {
-    if args.scan {
-        return port_scan(args);
-    }
-
-    connect_mode(args)
-}
-
-fn connect_mode(config: Args) -> Result<()> {
-    let addr_list: Vec<String> = config
-        .port
-        .iter()
-        .map(|port| format!("{}:{}", config.host, port))
-        .collect();
-
-    for addr in addr_list {
-        debug!("Connecting to {}", addr);
-
-        let _stream = TcpStream::connect_timeout(
-            &addr.to_socket_addrs()?.next().unwrap(),
-            Duration::from_secs(config.timeout),
-        )?;
-
-        info!("Connected to {}", addr);
-    }
-
-    Ok(())
-}
-
-fn port_scan(config: Args) -> Result<()> {
-    let port_range = if let Some(range_str) = config.range {
-        let parts: Vec<&str> = range_str.split('-').collect();
-        if parts.len() != 2 {
-            return Err(anyhow::anyhow!("Invalid range format. Use start-end."));
-        }
-        let start: u16 = parts[0].parse()?;
-        let end: u16 = parts[1].parse()?;
-        if start > end {
-            return Err(anyhow::anyhow!("Invalid range: start must be <= end."));
-        }
-        Some((start, end))
-    } else {
-        None
-    };
-
-    let (start_port, end_port) = if let Some((start, end)) = port_range {
-        (start, end)
-    } else {
-        return Err(anyhow::anyhow!(
-            "Please provide a valid port range with --range"
-        ));
-    };
-
-    info!("Scanning {}:{}-{}", config.host, start_port, end_port);
-
-    let mut open_ports = Vec::new();
-
-    for port in start_port..=end_port {
-        let addr = format!("{}:{}", config.host, port);
-        info!("Scanning port {}... ", port);
-        io::stdout().flush().unwrap();
-
-        match TcpStream::connect_timeout(
-            &addr.to_socket_addrs()?.next().unwrap(),
-            Duration::from_millis(100),
-        ) {
-            Ok(_) => {
-                open_ports.push(port);
-                info!("OPEN");
-            }
-            Err(_) => {
-                warn!("CLOSED");
-            }
-        }
-    }
-
-    if open_ports.is_empty() {
-        info!("No open ports found in range {}-{}", start_port, end_port);
-    } else {
-        info!("Found {} open ports: {:?}", open_ports.len(), open_ports);
-    }
-
-    Ok(())
 }
