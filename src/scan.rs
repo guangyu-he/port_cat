@@ -1,7 +1,7 @@
 use crate::{Args, detect_service};
 use anyhow::{Result, anyhow};
 use futures::future::join_all;
-use log::{debug, info, warn};
+use log::{debug, info};
 use std::net::{TcpStream, ToSocketAddrs};
 use std::time::Duration;
 
@@ -22,7 +22,7 @@ async fn every_port_scan(port: u16, host: String) -> Result<u16> {
             Ok(port)
         }
         Err(_) => {
-            warn!("Port {} CLOSED", port);
+            debug!("Port {} CLOSED", port);
             Err(anyhow!("Port {} CLOSED", port))
         }
     }
