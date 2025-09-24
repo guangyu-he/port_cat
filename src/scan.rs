@@ -1,7 +1,5 @@
-use crate::Args;
+use crate::{Args, detect_service};
 use log::{debug, info, warn};
-use std::io;
-use std::io::Write;
 use std::net::{TcpStream, ToSocketAddrs};
 use std::time::Duration;
 
@@ -36,15 +34,18 @@ pub fn scan_mode(config: Args) -> anyhow::Result<()> {
     for port in start_port..=end_port {
         let addr = format!("{}:{}", config.host, port);
         debug!("Scanning port {}... ", port);
-        io::stdout().flush().unwrap();
 
-        match TcpStream::connect_timeout(
+        let stream_res = TcpStream::connect_timeout(
             &addr.to_socket_addrs()?.next().unwrap(),
             Duration::from_millis(100),
-        ) {
-            Ok(_) => {
+        );
+
+        match stream_res {
+            Ok(mut stream) => {
                 open_ports.push(port);
                 info!("Port {} OPEN", port);
+                let service = detect_service::detect_service(&mut stream, port);
+                info!("Port {} Service detected: {}", port, service);
             }
             Err(_) => {
                 warn!("Port {} CLOSED", port);

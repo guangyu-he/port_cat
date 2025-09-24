@@ -1,5 +1,6 @@
 mod connect;
 mod scan;
+mod detect_service;
 
 use clap::Parser;
 use env_logger::Env;
