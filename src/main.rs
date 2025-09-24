@@ -30,7 +30,8 @@ struct Args {
     debug_level: String,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let args = Args::parse();
 
     env_logger::Builder::from_env(Env::default().default_filter_or(args.debug_level.as_str()))
@@ -38,7 +39,7 @@ fn main() {
         .init();
 
     match if args.scan.is_some() {
-        scan::scan_mode(args)
+        scan::scan_mode(args).await
     } else {
         connect::connect_mode(args)
     } {
