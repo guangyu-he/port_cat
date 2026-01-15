@@ -9,12 +9,30 @@ repository = "https://github.com/guangyu-he/port_cat"
 readme = "README.md"
 keywords = ["port", "scanner", "connectivity", "cli"]
 categories = ["network-programming", "command-line-utilities"]
+exclude = [".gitignore", "pyproject.toml", "tests/*", "examples/*", "docs/*"]
+
+[lib]
+name = "port_cat"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "port_cat"
+path = "src/main.rs"
 
 [dependencies]
+pyo3 = { features = ["extension-module", "abi3-py310", "generate-import-lib"], version = "0.27.2", optional = true }
 anyhow = "1.0"
 clap = { version = "4.5", features = ["derive"] }
 log = "0.4"
 env_logger = "0.11"
-tokio = { version = "1.47", features = ["rt", "rt-multi-thread", "macros"] }
+tokio = { version = "1.49", features = ["rt", "rt-multi-thread", "macros"], default-features = false }
 futures = "0.3"
+pyo3-async-runtimes = { version = "0.27.0", features = ["attributes", "tokio-runtime"], optional = true }
+socket2 = "0.6"
+serde = { version = "1.0", features = ["derive"] }
+
+[features]
+default = ["rslib"]
+rslib = []
+python = ["dep:pyo3", "dep:pyo3-async-runtimes"]
 
