@@ -1,15 +1,28 @@
-use crate::{Args, detect_service};
 use log::{debug, info};
 use serde::{Deserialize, Serialize};
 use socket2::Socket;
 use std::net::{TcpStream, ToSocketAddrs};
 use std::time::Duration;
 
+use crate::{Args, detect_service};
+
 #[cfg(feature = "python")]
 use pyo3::prelude::*;
 
 #[cfg_attr(feature = "python", pyclass(dict, get_all, subclass))]
 #[derive(Serialize, Deserialize, Debug, Clone)]
+/// Information about a connection
+/// Attributes:
+/// * `host` - The host connected to
+/// * `port` - The port connected to
+/// * `timeout` - Connection timeout in seconds
+/// * `recv_buffer_size` - Size of the receive buffer
+/// * `send_buffer_size` - Size of the send buffer
+/// * `keepalive` - Whether keepalive is enabled
+/// * `reuse_address` - Whether address reuse is enabled
+/// * `remote_ip` - Remote IP address
+/// * `remote_port` - Remote port number
+/// * `service` - Detected service on the port
 pub struct ConnectionInfo {
     host: String,
     port: u16,
@@ -58,11 +71,23 @@ pub fn connect_mode(
         .map_err(|e| pyo3::exceptions::PyException::new_err(e.to_string()))
 }
 
+/// Connect mode function, CLI binding
+/// # Arguments
+/// * `config` - The command line arguments
+/// Returns:
+/// * `Ok(())` on success, or an error on failure
 pub fn connect_mode_cli(config: Args) -> anyhow::Result<()> {
     let _ = _connect_mode(config.port, config.host, config.timeout)?;
     Ok(())
 }
 
+/// Internal connect mode function
+/// # Arguments
+/// * `ports` - A vector of port numbers to connect to
+/// * `host` - The host to connect to
+/// * `timeout` - Connection timeout in seconds
+/// Returns:
+/// * `Ok(Vec<ConnectionInfo>)` on success, or an error on failure
 fn _connect_mode<H: AsRef<str>>(
     ports: Vec<u16>,
     host: H,
