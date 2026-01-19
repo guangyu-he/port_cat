@@ -19,4 +19,22 @@ def connect_mode(
         host: str,
         timeout: int = 5,
 ) -> List[ConnectionInfo]:
+    """
+    :param ports: A list of port numbers to connect to
+    :param host: The host to connect to
+    :param timeout: Connection timeout in seconds, default is 5
+    :return:
+    """
+    ...
+
+
+async def scan_mode(
+        host: str,
+        scan_range: str = "0-65535",
+) -> list[int]:
+    """
+    :param host: The host to scan
+    :param scan_range: The range of ports to scan, default is "0-65535"
+    :return:
+    """
     ...
