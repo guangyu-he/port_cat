@@ -8,8 +8,8 @@ description = "A Rust CLI and Python extension for connectivity checks, port sca
 repository = "https://github.com/guangyu-he/port_cat"
 readme = "README.md"
 keywords = ["port", "scanner", "connectivity", "cli", "pyo3"]
-categories = ["network-programming", "command-line-utilities", "python-extensions"]
-exclude = [".gitignore", "pyproject.toml", "tests/*", "examples/*", "docs/*"]
+categories = ["network-programming", "command-line-utilities"]
+exclude = [".gitignore", "pyproject.toml", "tests/*", "example/*", "docs/*", "*.pyi", "uv.lock"]
 
 [lib]
 name = "port_cat"
