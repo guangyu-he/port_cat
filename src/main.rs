@@ -15,7 +15,7 @@ async fn main() {
         .init();
 
     match if args.scan.is_some() {
-        scan::scan_mode(args).await
+        scan::scan_mode_cli(args).await
     } else {
         connect::connect_mode_cli(args)
     } {

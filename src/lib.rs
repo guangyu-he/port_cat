@@ -36,4 +36,7 @@ pub struct Args {
 mod port_cat {
     #[pymodule_export]
     use crate::connect::connect_mode;
+
+    #[pymodule_export]
+    use crate::scan::scan_mode;
 }
