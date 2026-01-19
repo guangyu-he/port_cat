@@ -1,21 +1,22 @@
 # Port Cat 🐱
 
-A fast and efficient CLI tool for testing network connectivity and scanning ports on remote hosts, written in Rust.
+A fast Rust CLI and PyO3-powered Python extension for testing connectivity, scanning port ranges, and detecting common services.
 
 ## Features
 
 - **Connection Testing**: Test connectivity to specific ports
 - **Port Scanning**: Scan port ranges with concurrent execution
-- **Service Detection**: Automatically detect running services (HTTP, SSH, databases, etc.)
-- **Async Performance**: High-performance concurrent scanning using Tokio
+- **Service Detection**: Detect HTTP, SSH, FTP, SMTP, POP3, IMAP, Telnet, MySQL, PostgreSQL, Redis, and MongoDB
+- **Python Bindings**: `connect_mode` (sync) and `scan_mode` (async) exposed via PyO3
+- **Rich Connection Info**: Connection details including buffers, keepalive, and remote address
 - **Detailed Logging**: Configurable log levels for debugging
 
 ## Installation
 
-### From Source
+### Rust CLI (from source)
 
 ```bash
-git clone https://github.com/yourusername/port_cat.git
+git clone https://github.com/guangyu-he/port_cat.git
 cd port_cat
 cargo build --release
 ```
@@ -26,6 +27,14 @@ The binary will be available at `target/release/port_cat`
 
 ```bash
 cargo install --path .
+```
+
+### Python bindings (from source)
+
+With Python 3.10+ and maturin installed:
+
+```bash
+maturin develop --features python
 ```
 
 ## Usage
@@ -57,25 +66,17 @@ port_cat example.com -s 1-1000
 port_cat example.com -s 1-65535
 ```
 
-### Service Detection
+### Python API
 
-The tool automatically detects services running on open ports:
+```python
+import asyncio
+from port_cat import connect_mode, scan_mode
 
+connections = connect_mode(ports=[22, 80], host="example.com", timeout=5)
+open_ports = asyncio.run(scan_mode(host="example.com", scan_range="1-1024"))
 ```
-Connected to example.com:22 - Service: SSH
-Connected to example.com:80 - Service: HTTP (Nginx)
-Connected to example.com:443 - Service: HTTPS
-Connected to example.com:3306 - Service: MySQL
-```
 
-Supported service detection:
-
-- **Web Services**: HTTP, HTTPS (with server detection: Nginx, Apache, IIS, Caddy)
-- **SSH**: Secure Shell
-- **Databases**: MySQL, PostgreSQL, Redis, MongoDB
-- **Mail Services**: SMTP, POP3, IMAP
-- **FTP**: File Transfer Protocol
-- **And more...**
+`connect_mode` returns a list of `ConnectionInfo` objects with connection metadata and detected service.
 
 ## Command Line Options
 
@@ -143,7 +144,7 @@ The tool uses multiple detection methods:
 
 1. **Banner Reading**: Captures service banners automatically sent by servers
 2. **Protocol Probing**: Sends protocol-specific requests (HTTP, database handshakes, etc.)
-3. **Response Analysis**: Analyzes server responses to identify specific services and versions
+3. **Response Analysis**: Analyzes server responses to identify specific services
 
 ## Contributing
 
@@ -151,4 +152,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
